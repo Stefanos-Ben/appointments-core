@@ -19,29 +19,107 @@ export function appointmentService({ prisma }) {
      * Create a new appointment.
      * 
      * @param {Object} data - validated appointment input
+     *  * Data shape expected:
+     * {
+     *   userId?: number,
+     *   staffId: number,
+     *   serviceId: number,
+     *   clientName: string,
+     *   clientEmail: string,
+     *   clientPhone?: string,
+     *   startTime: Date,
+     *   endTime: Date,
+     *   notes?: string
+     * }
      */
     async create(data) {
 
-      console.log('Creating appointment with data:', data);
-      throw new Error('createAppointment is not implemented yet.');
+      const {
+        userId,
+        staffId,
+        serviceId,
+        clientName,
+        clientEmail,
+        clientPhone,
+        startTime,
+        endTime,
+        notes,
+      } = data;
+
+      // Basic overlap check: any existing appointment for that staff that overlaps the interval
+      const overlapping = await prisma.appointment.findFirst({
+        where: {
+          staffId,
+          status: {
+            in: ["PENDING", "CONFIRMED"],
+          },
+          startTime: { lt: endTime },
+          endTime: { gt: startTime },
+        },
+      });
+
+      if (overlapping) {
+        throw new Error("Timeslot is already booked for the selected staff member.")
+        err.code = "TIMESLOT_TAKEN"
+        throw err
+      }
+
+      const created = await prisma.appointment.create({
+        data: {
+          userId: userId || null,
+          staffId,
+          serviceId,
+          clientName,
+          clientEmail,
+          clientPhone: clientPhone || null,
+          startTime,
+          endTime,
+          notes,
+        },
+        include: {
+          staff: true,
+          service: true,
+          user: true,
+        },
+      })
+      return created
     },
     /**
      * Get an appointment by its ID.
      */
     async getById(id) {
-      console.log("[appointments-core] getAppointmentById called with:", id);
-      throw new Error("getAppointmentById is not implemented yet.");
+      const appointment = await prisma.appointment.findUnique({
+        where: { id },
+        include: {
+          staff: true,
+          service: true,
+          user: true,
+        },
+      })
+      return appointment
     },
     /**
      * List appointments for a given staff (doctor/barber) in a time range.
      */
     async listForStaff({ staffId, from, to }) {
-      console.log("[appointments-core] listAppointmentsForStaff called with:", {
+      const where = {
         staffId,
-        from,
-        to,
-      });
-      throw new Error("listAppointmentsForStaff is not implemented yet.");
+      }
+
+      if (from || to) {
+        where.startTime = {}
+        if (from) where.startTime.gte = from
+        if (to) where.startTime.lte = to
+      }
+
+      return prisma.appointment.findMany({
+        where,
+        orderBy: { startTime: 'asc' },
+        include: {
+          service: true,
+          user: true,
+        },
+      })
     },
   }
 }

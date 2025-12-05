@@ -4,5 +4,5 @@
 // For now, they just point to placeholder implementations.
 
 export * as services from "./services/services.js"
-export * as validation from "./schemas/appointmentSchemas.js"
+export * as schemas from "./schemas/appointmentSchemas.js"
 export * as utils from "./utils/utils.js"

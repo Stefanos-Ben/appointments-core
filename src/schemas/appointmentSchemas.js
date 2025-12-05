@@ -3,14 +3,24 @@ import { z } from 'zod'
 // Basic shared Zod schema for creating an appointment.
 // Times in ISO strings format.
 
+// small helper: ids can come as strings from HTTP, but map to Int in DB
+const numericIdSchema = z.union([
+  z.number().int().nonnegative(),
+  z
+    .string()
+    .regex(/^\d+$/, "must be a numeric string")
+    .transform((val) => parseInt(val, 10)),
+]);
+
 export const appointmentCreateSchema = z.object({
-    businessId: z.uuid().optional(),
+    userId: numericIdSchema.optional(),
 
-    clientId: z.string().min(1, "Client ID is required"),
+    staffId: numericIdSchema,
+    serviceId: numericIdSchema,
 
-    staffId: z.string().min(1, "Staff ID is required"),
-
-    serviceId: z.string().min(1, "Service ID is required"),
+    clientName: z.string().min(1, "clientName is required"),
+    clientEmail: z.email("clientEmail must be a valid email"),
+    clientPhone: z.string().optional(),
 
     startTime: z.string().min(1, "startTime is required"),
     endTime: z.string().min(1, "endTime is required"),
@@ -23,9 +33,13 @@ export const appointmentCreateSchema = z.object({
  * All fields are optional because updates can be partial.
  */
 export const appointmentUpdateSchema = z.object({
-  clientId: z.string().min(1).optional(),
-  staffId: z.string().min(1).optional(),
-  serviceId: z.string().min(1).optional(),
+  userId: numericIdSchema.optional(),
+  staffId: numericIdSchema.optional(),
+  serviceId: numericIdSchema.optional(),
+
+  clientName: z.string().min(1).optional(),
+  clientEmail: z.email().optional(),
+  clientPhone: z.string().optional(),
 
   startTime: z.string().optional(),
   endTime: z.string().optional(),
@@ -38,18 +52,18 @@ export const appointmentUpdateSchema = z.object({
  * E.g. ?staffId=...&from=...&to=...
  */
 export const appointmentQuerySchema = z.object({
-  staffId: z.string().optional(),
-  clientId: z.string().optional(),
-  serviceId: z.string().optional(),
+  staffId: numericIdSchema.optional(),
+  userId: numericIdSchema.optional(),
+  serviceId: numericIdSchema.optional(),
 
-  from: z.string().optional(),
+  from: z.string().optional(), // ISO datetime
   to: z.string().optional(),
 })
 
 /**
  * Simple ID schema – useful for params like /appointments/:id
  */
-export const appointmentIdSchema = z.string().min(1, "id is required");
+export const appointmentIdSchema = numericIdSchema;
 
 /**
  * Helper: validate and transform "create appointment" input.
