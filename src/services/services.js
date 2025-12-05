@@ -59,7 +59,7 @@ export function appointmentService({ prisma }) {
       });
 
       if (overlapping) {
-        throw new Error("Timeslot is already booked for the selected staff member.")
+        new Error("Timeslot is already booked for the selected staff member.")
         err.code = "TIMESLOT_TAKEN"
         throw err
       }
