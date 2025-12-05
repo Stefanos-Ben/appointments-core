@@ -1,0 +1,23 @@
+{
+  "name": "@stefanos-ben/appointments-core",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "echo \"(no build step yet)\"",
+    "test": "echo \"No tests yet\"",
+    "lint": "echo \"No linter yet\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Stefanos-Ben/appointments-core.git"
+  },
+  "keywords": [],
+  "author": "Stefanos Ben",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Stefanos-Ben/appointments-core/issues"
+  },
+  "homepage": "https://github.com/Stefanos-Ben/appointments-core#readme",
+  "description": "Shared core library for appointment-based apps (dentist, barber, etc.)."
+}

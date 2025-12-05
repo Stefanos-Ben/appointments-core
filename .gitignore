@@ -1,0 +1,15 @@
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+
+# macOS AppleDouble metadata files
+._*
+
+# Clean up script
+clean.sh
