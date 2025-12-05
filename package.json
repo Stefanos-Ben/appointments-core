@@ -19,5 +19,8 @@
     "url": "https://github.com/Stefanos-Ben/appointments-core/issues"
   },
   "homepage": "https://github.com/Stefanos-Ben/appointments-core#readme",
-  "description": "Shared core library for appointment-based apps (dentist, barber, etc.)."
+  "description": "Shared core library for appointment-based apps (dentist, barber, etc.).",
+  "dependencies": {
+    "zod": "^4.1.13"
+  }
 }
